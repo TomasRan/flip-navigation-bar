@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TomasRan/horizontal-scroll-bar.git"
+    "url": "git+https://github.com/TomasRan/flip-navigation-bar.git"
   },
   "keywords": [
     "navigation",
@@ -18,9 +18,9 @@
   "author": "tomasran",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TomasRan/horizontal-scroll-bar/issues"
+    "url": "https://github.com/TomasRan/flip-navigation-bar/issues"
   },
-  "homepage": "https://github.com/TomasRan/horizontal-scroll-bar#readme",
+  "homepage": "https://github.com/TomasRan/flip-navigation-bar#readme",
   "dependencies": {
     "jquery": "^2.2.3"
   },

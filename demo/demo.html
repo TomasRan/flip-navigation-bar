@@ -112,6 +112,51 @@
 				}
 			});
 
+			for (var j = 0; j < 49; j++) {
+				var status = '';
+				if (j % 3 === 0) {
+					navData[j].status = 'status-one';
+				} else if (j % 3 === 1) {
+					navData[j].status = 'status-two';
+				} else if (j % 3 === 2) {
+					navData[j].status = 'status-three';
+				}
+			}
+
+			container.append('<br/>');
+			container.append('<p>示例二（任意自定义样式）：</p>')
+			var flipNavBar3 = new FlipNavBar({
+				'container': '.main',
+				'navBarId': 'nav-bar-three',
+				'navBtnWidth': '32px',
+				'navContentClass': 'demo-three-nav-content',
+				'navItemClass': 'demo-three-nav-item',
+				'navItemSelectedClass': 'demo-three-selected',
+				'preBtn': {
+					'className': 'demo-three-nav-btn demo-three-nav-left',
+					'activeClass': 'demo-three-nav-active-btn',
+					'disableClass': 'demo-three-nav-disable-btn',
+					'content': '<'	
+				},
+				'nextBtn': {
+					'className': 'demo-three-nav-btn demo-three-nav-right',
+					'activeClass': 'demo-three-nav-active-btn',
+					'disableClass': 'demo-three-nav-disable-btn',
+					'content': '>'
+				},
+				'jumpToSelected': false,
+				'defaultSelected': '5',
+				'navData': navData,
+				'statusClassMap': {
+					'status-one': 'status-one',
+					'status-two': 'status-two',
+					'status-three': 'status-three'
+				},
+				'callback': function(data) {
+					console.log(data);
+					console.log(this.selected);
+				}
+			});
 			/* setTimeout(function() {
 				flipNavBar.select('8');
 			}, 2000);*/

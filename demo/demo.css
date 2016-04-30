@@ -7,4 +7,7 @@
 .demo-three-nav-btn{padding:6px 0px;text-align:center;border: 1px solid #f7f7f7;}
 .demo-three-nav-active-btn{color:#fff;background:blue;}
 .demo-three-nav-disable-btn{background:#f7f7f7;}
+.status-one{background:blue;color:#fff;}
+.status-two{background:red;color:#fff;}
+.status-three{background:green;color:#fff;}
 .demo-three-selected{background:blue;color:#fff;}

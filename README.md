@@ -91,10 +91,10 @@ default selected navigation item's id
 ##### description:
 whether jump to selected item
 
-> callback
+> callback(data)
 
 ##### description:
-callback when the navigation item is selected
+callback when the navigation item is selected, and the data contains attributes: `id` and `status` of current selected.
 
 > preBtn/nextBtn
 
@@ -115,12 +115,12 @@ configuration of pre/next button
 data of navigation section
 
 ### Methods
-> select
+> select(id)
 
 ##### description:
 select the specific navigation item's id
 
-> setItemStatus
+> setItemStatus(id, status)
 
 ##### description:
 change the item's status
