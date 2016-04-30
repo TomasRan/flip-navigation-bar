@@ -43,64 +43,87 @@ $ bower install flip-navigation-bar
 > container
 
 ##### description:
+It's a string or a jquery selector passed to contain the flip nav bar.
 
 > navBarId
 
-#### description:
-
 > navBarClass
-
-#### description:
 
 > navBarWidth
 
-#### description:
-
 > navItemWidth
 
-#### description:
+##### description:
+the width of single nav item
 
 > navBtnWidth
 
-#### description:
+##### description:
+the width of pre/next button
 
 > navContentClass
 
-#### description:
+##### description:
+the class of navigation section
 
 > navItemClass
 
-#### description:
+##### description:
+the class of single navigation item
 
 > navItemSelectedClass
 
-#### description:
+##### description:
+the class of single navigation item when selected
 
 > statusClassMap
 
-#### description:
+##### description:
+For each of navigation items, it will have a customized status. So a extra class will be added to it according to the map.
 
 > defaultSelected
 
-#### description:
+##### description:
+default selected navigation item's id
 
 > jumpToSelected
 
-#### description:
+##### description:
+whether jump to selected item
 
 > callback
 
-#### description:
+##### description:
+callback when the navigation item is selected
 
 > preBtn/nextBtn
 
-#### description:
+##### description:
+configuration of pre/next button
+
+|attribute|description|
+|:--|:--|
+|id| id of button |
+|content| content of button |
+|className| class of button |
+|activeClass| active class of button|
+|disableClass| disable class of button|
 
 > navData
 
-#### description:
+##### description:
+data of navigation section
 
 ### Methods
+> select
+
+##### description:
+select the specific navigation item's id
+
+> setItemStatus
+
+##### description:
+change the item's status
 
 ## License
 The MIT License (MIT)
