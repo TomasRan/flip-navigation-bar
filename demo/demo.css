@@ -1,4 +1,5 @@
 * {margin:0px;padding:0px;border:0px;font-family: "Microsoft YaHei", "\u5b8b\u4f53", arial, helvetica, sans-serif, tahoma;}
+html,body{background:#333;}
 .main{position:absolute;top:50%;left:50%;}
 .demo-three-nav-content{border-radius: 16px;}
 .demo-three-nav-item{border-radius:50%;text-align:center;padding:7px 0px;background:#f7f7f7;margin-left: 8px;margin-right:8px;}
