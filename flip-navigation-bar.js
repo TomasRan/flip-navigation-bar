@@ -16,7 +16,7 @@
  *			'navBtnWidth': '',			//（可选参数）翻页导航按钮宽度
  *			'navContentClass': '',		//（可选参数）翻页导航区域的自定义class
  *			'navItemClass': '',			//（可选参数）翻页导航项的自定义class
- *			'itemSelectedClass': '',	//（可选参数）翻页导航项选中后的自定义class
+ *			'navItemSelectedClass': '',	//（可选参数）翻页导航项选中后的自定义class
  *			'statusClassMap': {},		// 用户自定义的状态与对应状态class的映射关系
  *			'defaultSelected': '',		// 默认选中的项 
  *			'jumpToSelected': '',		// 选中是否跳到对应项 
@@ -273,15 +273,15 @@
 
 		// 构造滚动内容
 		constructNavSection: function() {
-			var navMask = createElement(this.NAV_MASK).css({
+			var navMask = createElement(this.NAV_MASK).attr({
+				'class': this.options.navContentClass
+			}).css({
 				'float': 'left',
 				'width': this.visualNavWidth + 'px',
 				'overflow': 'hidden'
 			});
 
-			var navContent = createElement(this.NAV_CONTENT).attr({
-				'class': this.options.navContentClass
-			}).css({
+			var navContent = createElement(this.NAV_CONTENT).css({
 				'white-space': 'nowrap'
 			});
 
@@ -488,7 +488,7 @@
 			this.totalNavWidth = this.getTotalNavWidth();
 			this.navItemWidth = this.totalNavWidth / this.navContent.children().length;
 
-			this.select(this.selected, true);
+			this.select(this.selected);
 			this.handleBtn();
 		},
 

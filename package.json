@@ -11,8 +11,8 @@
     "url": "git+https://github.com/TomasRan/horizontal-scroll-bar.git"
   },
   "keywords": [
-	"navigation",
-	"flip-navigation",
+    "navigation",
+    "flip-navigation",
     "flip-navigation-bar"
   ],
   "author": "tomasran",
@@ -23,5 +23,9 @@
   "homepage": "https://github.com/TomasRan/horizontal-scroll-bar#readme",
   "dependencies": {
     "jquery": "^2.2.3"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-uglify": "^1.0.1"
   }
 }
