@@ -226,7 +226,7 @@
 				'statusClassMap': {},
 				'defaultSelected': '',
 				'jumpToSelected': true,
-				'callback': function(data) {console.log(data)}
+				'callback': function(data) {console.log(data);}
 			}, options);
 
 			this.options.navBarWidth = parseFloat(this.options.navBarWidth) || 0;
@@ -490,16 +490,6 @@
 
 			this.select(this.selected, true);
 			this.handleBtn();
-
-			// todo: resize
-			/*	$(window).resize(function() {
-					this.setNavBarSize();
-					this.setVisualNavWidth();
-					this.navMask.css({
-						'width': this.visualNavWidth + 'px'
-					});
-					this.handleBtn();
-				}.bind(this));*/
 		},
 
 		bindEvent: function(target, eventType, callback) {
