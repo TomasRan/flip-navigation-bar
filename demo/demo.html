@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang='en'>
+	<head>
+		<meta charset='utf-8'> 
+		<title>水平滚动条</title>
+	</head>
+	<body>
+		<div class='main'></div>
+	</body>
+	<script src='require.js'></script>
+	<script src='../node_modules/jquery/dist/jquery.js'></script>
+	<script>
+		requirejs(['../flip-navigation-bar'], function(FlipNavBar) {
+			var navData = [];
+
+			var i = 1;
+
+			for (; i < 5; i++) {
+				navData.push({
+					'id': i,
+					'content': '0'+ i,
+					'status': ''
+				});	
+			}
+
+			for (; i < 10; i++) {
+				navData.push({
+					'id': i,
+					'content': '0' + i,
+					'status': ''
+				});	
+			}
+
+			for (; i < 50; i++) {
+				navData.push({
+					'id': i,
+					'content': i,
+					'status': ''
+				});	
+			}
+
+			var flipNavBar = new FlipNavBar({
+				'container': '.main',
+				'navBarId': 'demo-scroll',
+				'defaultSelected': '3',
+				'navData': navData,
+				'statusClassMap': {
+					'corrected': 'corrected',
+					'correcting': 'correcting',
+					'uncorrect': 'uncorrect'
+				},
+				'callback': function(data) {
+					console.log(data);
+					console.log(this.selected);
+				}
+			});
+
+			/* setTimeout(function() {
+				flipNavBar.select('8');
+			}, 2000);*/
+		});
+	</script>
+</html>

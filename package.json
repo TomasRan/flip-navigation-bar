@@ -1,0 +1,27 @@
+{
+  "name": "flip-navigation-bar",
+  "version": "1.0.0",
+  "description": "flip navigation bar",
+  "main": "flip-navigation-bar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TomasRan/horizontal-scroll-bar.git"
+  },
+  "keywords": [
+	"navigation",
+	"flip-navigation",
+    "flip-navigation-bar"
+  ],
+  "author": "tomasran",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TomasRan/horizontal-scroll-bar/issues"
+  },
+  "homepage": "https://github.com/TomasRan/horizontal-scroll-bar#readme",
+  "dependencies": {
+    "jquery": "^2.2.3"
+  }
+}
