@@ -189,7 +189,7 @@
 					cssString += '.'+  prop + 
 						'{' + 
 						this.DEFAULT_STYLE[prop] +
-						'}' + '\n';	
+						'}\n';
 				}
 			}			
 
@@ -360,10 +360,10 @@
 
 		// 得到元素占据空间的宽度
 		getOccupationWidth: function(element, args) {
-			var contentWidth = parseFloat(element.css('width')) || 0;
-			var marginWidth = parseFloat(element.css('margin-left')) + parseFloat(element.css('margin-right')) || 0;
-			var paddingWidth = parseFloat(element.css('padding-left')) + parseFloat(element.css('padding-right')) || 0;
-			var borderWidth = parseFloat(element.css('border-left-width')) + parseFloat(element.css('border-right-width')) || 0;
+			var contentWidth = parseFloat(element.css('width'));
+			var marginWidth = parseFloat(element.css('margin-left')) + parseFloat(element.css('margin-right'));
+			var paddingWidth = parseFloat(element.css('padding-left')) + parseFloat(element.css('padding-right'));
+			var borderWidth = parseFloat(element.css('border-left-width')) + parseFloat(element.css('border-right-width'));
 
 			var data = {
 				'content': contentWidth,
@@ -496,8 +496,8 @@
 			target.on(eventType, function(e) {
 				callback(e);
 			});
-		},
+		}
 	};
 
 	return FlipNavigationBar;
-}))
+}));
