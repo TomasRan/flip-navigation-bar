@@ -7,135 +7,110 @@
 /*
  *	@example:
  *		var flipNavigationBar = new FlipNavigationBar({
- *			'container': '',			// 外层传进来的容器	
+ *			'container': '',			// 外层传进来的容器
  *
- *			'navBarId': '',				//（可选参数）翻页导航条容器自定义id
- *			'navBarClass': '',			//（可选参数）翻页导航条容器自定义class 
- *			'navBarWidth': '',			//（可选参数）翻页导航条宽度
- *			'navItemWidth': '',			//（可选参数）翻页导航项宽度
- *			'navBtnWidth': '',			//（可选参数）翻页导航按钮宽度
- *			'navContentClass': '',		//（可选参数）翻页导航区域的自定义class
- *			'navItemClass': '',			//（可选参数）翻页导航项的自定义class
- *			'navItemSelectedClass': '',	//（可选参数）翻页导航项选中后的自定义class
- *			'statusClassMap': {},		// 用户自定义的状态与对应状态class的映射关系
- *			'defaultSelected': '',		// 默认选中的项 
- *			'jumpToSelected': '',		// 选中是否跳到对应项 
- *			'callback': '',				// 选中项执行的callback
+ *			'navBarClass': '',			//（可选参数）翻页导航条容器class 
+ *			'navContentClass': '',
+ *			'navItemClass': '',			//（可选参数）翻页导航项class
+ *			'navItemSelectedClass': '',	//（可选参数）翻页导航项选中后class
+ *			'navBtnClass': '',			// 导航pre/next按钮class
+ *			'navBtnActiveClass': '',	// pre/next按钮激活时class
+ *			'navBtnDisableClass': '',	// pre/next按钮
  *
  *			'preBtn: {					// 前一页按钮配置
- *				'id': '',				//（可选参数）按钮的自定义id
- *				'content': '',			//（可选参数）按钮的内容（默认是‘pre’）
+ *				'content': '',			//（可选参数）按钮的内容
  *				'className': '',		//（可选参数）按钮自定义class
  *				'activeClass': '',		//（可选参数）按钮处于激活状态的自定义class
  *				'disableClass': '',		//（可选参数）按钮处于禁用状态的自定义class
  *			},
  *
  *			'nextBtn': {				// 后一页按钮配置
- *				'id': '',
  *				'className': '',
  *				'content': '',
  *				'activeClass': '',
  *				'disableClass': ''
  *			},
  *
- *			'navData': [{			// 滚动项数据
+ *			'navData': [{				// 滚动项数据
  *				'id': '',				//（必填参数）项唯一的id
  *				'content': '',			// 项的内容（默认为空）
- *				'status': ''			// 项的当前状态（项的当前状态不包含选中状态，是用户自定义的状态）
  *			}, {
  *				...
- *			}]
+ *			}],
+ *			'jumpToSelected': '',		//（可选参数）选中是否跳到对应项 
+ *			'defaultSelected': '',		// 默认选中的项 
+ *			'callback': '',				// 选中项执行的callback
  *		});
  */
 
 ((function(global, factory) {
 	if (typeof define === 'function' && define.amd) {
-		define(['jquery'], function(jquery) {
-			return factory(jquery);	
+		define(['jquery'], function(jQuery) {
+			return factory(jQuery);
 		});
 	} else if (typeof module !== undefined && module.exports) {
 		module.exports = factory(require('jquery'));
 	} else {
-		global.FlipNavigationBar = factory(global.jQuery);
+		root.FlipNavigationBar = factory(global.jQuery);
 	}
 })(window || {}, function($) {
+
 	var createElement = function(tagName) {
-		return $(document.createElement(tagName));
-	};
-
-	var addCssStyle = function (cssString) {
-		var style = document.createElement('style');
-
-		style.setAttribute('type', 'text/css');
-
-		if (style.styleSheet) {  
-			style.styleSheet.cssText = cssString;  
-		} else {  
-			var cssText = document.createTextNode(cssString);  
-			
-			style.appendChild(cssText);  
-		}  
-
-		var head = document.getElementsByTagName('head');
-
-		if (head.length) {
-			head[0].appendChild(style);
-		} else {
-			document.documentElement.appendChild(style);
-		}
+		return $('<' + tagName + '>');
 	};
 
 	var FlipNavigationBar = function(options) {
 		this.checkOptions(options);
 
-		// 设置当前选中项（选中项id）
-		this.selected = this.options.defaultSelected || '';
-
 		// 获得外层容器对象
 		this.container = this.getContainer();
+
+		if (this.container === null) {
+			return false;
+		}
+
+		// 设置当前选中项（选中项id）
+		this.selected = this.options.defaultSelected || (this.options.navData[0] && this.options.navData[0].id);
 
 		// 当前的滚动距离
 		this.scrollDistance = 0;
 
-		// 滚动内容单个选择项的宽度
-		this.navItemWidth = parseFloat(this.options.navItemWidth) || 0;
-
 		// 生成滚动条容器
-		this.navBar = createElement(this.NAV_BAR).attr({
-			'id': this.options.navBarId
+		this.navBar = createElement(this.NAV_BAR_TAG).attr({
+			'class':  this.options.navBarClass
 		}).css({
-			'width': parseFloat(this.options.navBarWidth) + 'px' || 0,
-			'white-space': 'nowrap',
+			'position': 'relative',
 			'overflow': 'hidden'
 		});
 
-		this.navBar.addClass(this.options.navBarClass);
-
 		this.container.append(this.navBar);
-		this.setNavBarSize();
 
 		// 构造pre/next按钮
-		this.preBtn = this.constructButton(this.options.preBtn, 'left');
-		this.nextBtn = this.constructButton(this.options.nextBtn, 'right');
+		this.preBtn = this.constructButton(this.options.preBtn).css({
+			'float': 'left'
+		});
+		this.nextBtn = this.constructButton(this.options.nextBtn).css({
+			'float': 'right'
+		});
+
+		this.preActive = this.options.preBtn.activeClass || this.options.navBtnActiveClass;
+		this.preDisable = this.options.preBtn.disableClass || this.options.navBtnDisableClass;
+		this.nextActive = this.options.nextBtn.activeClass || this.options.navBtnActiveClass;
+		this.nextDisable = this.options.nextBtn.disableClass || this.options.navBtnDisableClass;
 
 		this.navBar.append(this.preBtn);
 		this.navBar.append(this.nextBtn);
 
-		this.preBtnWidth = this.getOccupationWidth(this.preBtn, ['all']);
-		this.nextBtnWidth = this.getOccupationWidth(this.nextBtn, ['all']);
+		this.preBtnWidth = this.getWidth(this.preBtn);
+		this.nextBtnWidth = this.getWidth(this.nextBtn);
 
-		this.bindEvent(this.preBtn, 'click', function(e) {
-			this.handlePreAction();
-			this.handleBtn();
+		this.preBtn.on('click', function(e) {
+			this.prePage();
 		}.bind(this));
 
-		this.bindEvent(this.nextBtn, 'click', function(e) {
-			this.handleNextAction();
-			this.handleBtn();
+		this.nextBtn.on('click', function(e) {
+			this.nextPage();
 		}.bind(this));
-
-		// 滚动区域可视内容宽度
-		this.setVisualNavWidth(); 
 
 		this.render();
 	};
@@ -143,101 +118,43 @@
 	FlipNavigationBar.prototype = {
 		CURSOR: 'pointer',
 
-		NAV_BAR: 'div',
-		NAV_BUTTON: 'span',
-		NAV_MASK: 'div',
-		NAV_CONTENT: 'div',
-		NAV_ITEM: 'a',
+		DATA_PREFIX: 'data-',
 
-		DEFAULT_NAV_BAR_WIDTH: 320,
-		DEFAULT_NAV_ITEM_WIDTH: 32,
-		DEFAULT_NAV_BTN_WIDTH: 30,
+		NAV_BAR_TAG: 'nav',
+		NAV_BUTTON_TAG: 'span',
+		NAV_MASK_TAG: 'div',
+		NAV_CONTENT_TAG: 'div',
+		NAV_ITEM_TAG: 'a',
 
-		DEFAULT_NAV_BAR_ID: 'flip-nav-bar',
 		DEFAULT_NAV_BAR_CLASS: 'flip-nav-bar',
+		DEFAULT_NAV_CONTENT_CLASS: 'flip-nav-content',
 		DEFAULT_NAV_ITEM_CLASS: 'flip-nav-item',
 		DEFAULT_NAV_BTN_CLASS: 'flip-nav-btn',
 		DEFAULT_NAV_BTN_ACTIVE_CLASS: 'flip-nav-active-btn',
 		DEFAULT_NAV_BTN_DISABLE_CLASS: 'flip-nav-disable-btn',
 		DEFAULT_NAV_ITEM_SELECTED_CLASS: 'flip-nav-item-selected',
 
-		DEFAULT_STYLE: {
-			'flip-nav-bar': 'font-family: "Microsoft YaHei", arial, helvetica, sans-serif',
-
-			'flip-nav-item': 'padding: 5px 0px;' +
-				'border-top: 1px solid #d1d1d1;' +
-				'border-bottom: 1px solid #d1d1d1;' +
-				'color: #3a86d2;' +
-				'text-align: center;',
-
-			'flip-nav-btn': 'padding:5px 0px;' +
-				'border: 1px solid #d1d1d1;' +
-				'text-align: center;',
-
-			'flip-nav-active-btn': 'color: #3a86d2;',
-
-			'flip-nav-disable-btn': 'color: #d2d2d2',
-
-			'flip-nav-item-selected': 'background: #3a86d2;color:#fff;'
-		},
-
-		getDefaultStyle: function() {
-			var cssString = '';
-
-			for (var prop in this.DEFAULT_STYLE) {
-				if (this.DEFAULT_STYLE.hasOwnProperty(prop)) {
-					cssString += '.'+  prop + 
-						'{' + 
-						this.DEFAULT_STYLE[prop] +
-						'}\n';
-				}
-			}			
-
-			return cssString;
-		},
-
 		checkOptions: function(options) {
-			addCssStyle(this.getDefaultStyle());
-
 			this.options = $.extend({
 				'container': $(document.body),
-				'navBarId': this.DEFAULT_NAV_BAR_ID,
 				'navBarClass': this.DEFAULT_NAV_BAR_CLASS,
+				'navContentClass': this.DEFAULT_NAV_CONTENT_CLASS,
 				'navItemClass': this.DEFAULT_NAV_ITEM_CLASS,
 				'navItemSelectedClass': this.DEFAULT_NAV_ITEM_SELECTED_CLASS,
-				'navBarWidth': this.DEFAULT_NAV_BAR_WIDTH,
-				'navItemWidth': this.DEFAULT_NAV_ITEM_WIDTH,
-				'navBtnWidth': this.DEFAULT_NAV_BTN_WIDTH,
+				'navBtnClass': this.DEFAULT_NAV_BTN_CLASS,
+				'navBtnActiveClass': this.DEFAULT_NAV_BTN_ACTIVE_CLASS,
+				'navBtnDisableClass': this.DEFAULT_NAV_BTN_DISABLE_CLASS,
 				'preBtn': {
-					'id': 'pre-btn',
-					'className': this.DEFAULT_NAV_BTN_CLASS,
-					'activeClass': this.DEFAULT_NAV_BTN_ACTIVE_CLASS,
-					'disableClass': this.DEFAULT_NAV_BTN_DISABLE_CLASS,
 					'content': '<<'
 				},
 				'nextBtn': {
-					'id': 'next-btn',
-					'className': this.DEFAULT_NAV_BTN_CLASS,
-					'activeClass': this.DEFAULT_NAV_BTN_ACTIVE_CLASS,
-					'disableClass': this.DEFAULT_NAV_BTN_DISABLE_CLASS,
 					'content': '>>'
 				},
 				'navData': [],
-				'statusClassMap': {},
 				'defaultSelected': '',
 				'jumpToSelected': true,
-				'callback': function(data) {console.log(data);}
+				'callback': function(data) {}
 			}, options);
-
-			this.options.navBarWidth = parseFloat(this.options.navBarWidth) || 0;
-			this.options.navItemWidth = parseFloat(this.options.navItemWidth) || 0;
-			this.options.navBtnWidth = parseFloat(this.options.navBtnWidth) || 0;
-		},
-
-		// 获取滚动条的高度和宽度
-		setNavBarSize: function() {
-			this.navBarWidth = parseFloat(this.navBar.css('width')) || 0;
-			this.navBarHeight = parseFloat(this.navBar.css('height')) || 0;
 		},
 
 		// 得到传入的外层容器对象
@@ -245,201 +162,305 @@
 			if (typeof this.options.container === 'object') {
 				return this.options.container;
 			} else if (typeof this.options.container === 'string') {
-				return $(this.options.container);
+				var container = $(this.options.container);
+
+				if (container.length === 0) {
+					return null;	
+				} else {
+					return container;	
+				}
 			}
 		},
 
 		// 构造pre/next按钮
-		constructButton: function(btnOpts, position) {
-			var btn = createElement(this.NAV_BUTTON).attr({
+		constructButton: function(btnOpts, type) {
+			var btn = createElement(this.NAV_BUTTON_TAG).attr({
 				'id': btnOpts.id,
-				'class': btnOpts.className 
+				'class': btnOpts.className || this.options.navBtnClass
 			}).css({
-				'float': position,
 				'cursor': this.CURSOR
 			}).html(btnOpts.content);
-
-			if (this.options.navBtnWidth) {
-				btn.css('width', this.options.navBtnWidth + 'px');
-			}
 
 			return btn;
 		},
 
-		// 得到滚动可视区域的宽度
-		setVisualNavWidth: function() {
-			this.visualNavWidth = Math.round(this.navBarWidth - this.preBtnWidth - this.nextBtnWidth);
+		setItemData: function(item, data, exceptArr) {
+			var exceptMap = {};
+
+			$.each(exceptArr, function(i, ea) {
+				exceptMap[ea] = true;
+			});
+
+			for (var prop in data) {
+				if (data.hasOwnProperty(prop)) {
+					if (!exceptMap[prop]) {
+						item.attr(this.DATA_PREFIX + prop, data[prop]);	
+					}
+				}
+			}
+		},
+
+		getItemData: function(item) {
+			var data = {};
+			var attributes = item.attributes;
+			var reg = new RegExp('^' + this.DATA_PREFIX + '*');
+
+			for (var prop in attributes) {
+				if (attributes.hasOwnProperty(prop)) {
+					if (reg.test(attributes[prop].name)) {
+						var attr = attributes[prop].name.replace(reg, '');
+
+						data[attr] = attributes[prop].value;
+					}
+				}
+			}
+
+			return data;
 		},
 
 		// 构造滚动内容
 		constructNavSection: function() {
-			var navMask = createElement(this.NAV_MASK).attr({
-				'class': this.options.navContentClass
+			var self = this;
+
+			var navMask = createElement(self.NAV_MASK_TAG).attr({
+				'class': self.options.navContentClass
 			}).css({
 				'float': 'left',
-				'width': this.visualNavWidth + 'px',
-				'overflow': 'hidden'
+				'width': self.visualNavItemWidth + 'px',
+				'overflow': 'hidden',
 			});
 
-			var navContent = createElement(this.NAV_CONTENT).css({
-				'white-space': 'nowrap'
+			var navContent = createElement(self.NAV_CONTENT_TAG).css({
+				'position': 'relative',
+				'width': '9999999px'
 			});
 
-			navContent.appendTo(navMask);
+			navMask.append(navContent);
+			var items = [];
 
-			$.each(this.options.navData, function(i, itemData) {
-				var item = createElement(this.NAV_ITEM).attr({
-					'class': this.options.navItemClass,
-					'data-id': itemData.id,
-					'data-current-status': itemData.status
+			$.each(self.options.navData, function(i, itemData) {
+				var item = createElement(self.NAV_ITEM_TAG).attr({
+					'class': self.options.navItemClass
 				}).css({
-					'display': 'inline-block',
-					'cursor': this.CURSOR
-				}).html(itemData.content).appendTo(navContent);
+					'cursor': self.CURSOR,
+					'float': 'left'
+				}).html(itemData.content);
 
-				if (this.navItemWidth) {
-					item.css('width', this.navItemWidth + 'px');
-				}
+				self.setItemData(item, itemData, ['content']);	
 
-				item.addClass(this.options.statusClassMap[itemData.status]);
-			}.bind(this));
+				items.push(item);
+			});
 
-			this.bindEvent(navContent, 'click', function(e) {
-				if (e.target.nodeName.toLowerCase() === this.NAV_ITEM) {
-					var id = $(e.target).attr('data-id');
+			navContent.append(items);
 
-					this.select(id, true);
-				}
-			}.bind(this));
+			navContent.on('click', self.NAV_ITEM_TAG, function(e) {
+				var id = $(this).attr(self.DATA_PREFIX + 'id');
 
-			this.navContent = navContent;
-			this.navMask = navMask;
+				self.select(id);
+			});
+
+			self.navContent = navContent;
+			self.navMask = navMask;
 
 			return navMask;
 		},
 
-		getTargetById: function(id) {
-			return this.navBar.find('[data-id=' + id + ']');
+		getTargets: function(attrName, attrValue) {
+			if (!attrValue || typeof attrValue === 'object') {
+				return [];
+			};
+
+			return this.navBar.find('[' + attrName + '=' + attrValue + ']');
 		},
 
 		// 选中某个item
-		select: function(id, initiative) {
-			var target = this.getTargetById(id);
+		select: function(id, passive) {
+			var targets = this.getTargets(this.DATA_PREFIX + 'id', id + '');
 
-			var data = {
-				'id': id,
-				'status': target.attr('data-current-status')
-			};
+			if (targets.length === 0) {
+				return false;	
+			}
+
+			var item = targets[0];
+			var data = this.getItemData(item);
 
 			this.clearSelection();
-			target.addClass(this.options.navItemSelectedClass);
 			this.selected = id;
+			$(item).addClass(this.options.navItemSelectedClass);
 
-			if (!initiative && this.options.jumpToSelected) {
+			if (this.options.jumpToSelected) {
 				this.jumpToItem(id);	
 			}
 
-			if (initiative) {
-				this.options.callback.call(this, data);
-			}
+			this.options.callback.call(this, data);
 		},
 
 		clearSelection: function() {
-			this.navBar.find(this.NAV_ITEM).removeClass(this.options.navItemSelectedClass);
+			this.navBar.find(this.NAV_ITEM_TAG).removeClass(this.options.navItemSelectedClass);
 		},
 
-		// 修改指定项的状态
-		setItemStatus: function(id, targetStatus) {
-			var item = this.getTargetById(id);
-			var originStatus = item.attr('data-current-status');
-
-			item.removeClass(this.options.statusClassMap[originStatus]);
-			item.attr('data-current-status', currentStatus);
-			item.addClass(this.options.statusClassMap[currentStatus]);
-		},
-
-		// 得到元素占据空间的宽度
-		getOccupationWidth: function(element, args) {
-			var contentWidth = parseFloat(element.css('width'));
-			var marginWidth = parseFloat(element.css('margin-left')) + parseFloat(element.css('margin-right'));
-			var paddingWidth = parseFloat(element.css('padding-left')) + parseFloat(element.css('padding-right'));
-			var borderWidth = parseFloat(element.css('border-left-width')) + parseFloat(element.css('border-right-width'));
-
-			var data = {
-				'content': contentWidth,
-				'margin': marginWidth,
-				'padding': paddingWidth,
-				'border': borderWidth,
-				'all': contentWidth + marginWidth + paddingWidth + borderWidth
+		getWidth: function(target, options) {
+			var result = 0;
+			var contentWidth = parseFloat(target.css('width'));
+			var paddingRight = parseFloat(target.css('padding-right'));
+			var paddingLeft = parseFloat(target.css('padding-left'));
+			var marginRight = parseFloat(target.css('margin-right'));
+			var marginLeft = parseFloat(target.css('margin-left'));
+			var borderLeft = parseFloat(target.css('border-left-width')) 
+				var borderRight = parseFloat(target.css('border-right-width'));
+			var map = {
+				'cw': contentWidth,
+				'pr': paddingRight,
+				'pl': paddingLeft,
+				'mr': marginRight,
+				'ml': marginLeft,
+				'bl': borderLeft,
+				'br': borderRight
 			};
 
-			var result = 0;
-
-			for (var i = 0; i < args.length; i++) {
-				if (args[i] !== undefined) {
-					result += data[args[i]];
-				}
+			if (options === undefined) {
+				options = ['cw', 'pr', 'pl', 'mr', 'ml', 'bl', 'br'];	
 			}
+
+			$.each(options, function(i, opt) {
+				result += map[opt];
+			});
 
 			return result;
 		},
 
 		// 得到滚动区域的总宽度
-		getTotalNavWidth: function() {
-			var width = 0;
+		getTotalNavItemWidth: function() {
+			var length = this.navContent.children().length;
 
-			$.each(this.navContent.children(), function(i, item) {
-				width += this.getOccupationWidth($(item), ['margin', 'padding', 'border']);	
-				width += this.navItemWidth;
-			}.bind(this));
+			if (length === 0) {
+				return 0;	
+			}
 
-			return width;
+			var leftItem = this.navContent.children()[0];
+			var rightItem = this.navContent.children()[length - 1];
+
+			var width = $(rightItem).position().left - $(leftItem).position().left + this.getWidth($(rightItem));
+
+			return Math.ceil(width);
 		},
 
-		// 判断是否有下一页
-		hasNext: function() {
-			return Math.abs(this.scrollDistance) < (this.totalNavWidth - this.visualNavWidth);
+		// 是否有下一页
+		hasNextPage: function() {
+			return Math.abs(this.scrollDistance) < (this.totalNavItemWidth - this.visualNavItemWidth);
 		},
 
-		// 判断是否有上一页
-		hasPre: function() {
+		// 是否有上一页
+		hasPrePage: function() {
 			return this.scrollDistance < 0;		
 		},
 
-		// 处理 pre/next 按钮的状态
+		// 处理翻页按钮的状态
 		handleBtn: function() {
-			var preActive = this.options.preBtn.activeClass;
-			var preDisable = this.options.preBtn.disableClass;
-			var nextActive = this.options.nextBtn.activeClass;
-			var nextDisable = this.options.nextBtn.disableClass;
-
-			if (this.hasNext()) {
-				this.nextBtn.removeClass(nextDisable).addClass(nextActive);
+			if (this.hasNextPage()) {
+				this.nextBtn.removeClass(this.nextDisable).addClass(this.nextActive);
 				this.nextBtn.css('cursor', 'pointer');
 			} else {
-				this.nextBtn.removeClass(nextActive).addClass(nextDisable);
+				this.nextBtn.removeClass(this.nextActive).addClass(this.nextDisable);
 				this.nextBtn.css('cursor', 'auto');
 			}
 
-			if (this.hasPre()) {
-				this.preBtn.removeClass(preDisable).addClass(preActive);
+			if (this.hasPrePage()) {
+				this.preBtn.removeClass(this.preDisable).addClass(this.preActive);
 				this.preBtn.css('cursor', 'pointer');
 			} else {
-				this.preBtn.removeClass(preActive).addClass(preDisable);
+				this.preBtn.removeClass(this.preActive).addClass(this.preDisable);
 				this.preBtn.css('cursor', 'auto');
 			}		  
 		},
 
-		// 处理pre按钮翻页操作
-		handlePreAction: function() {
-			if (this.hasPre()) {
-				var totalItems = Math.abs(this.scrollDistance) / this.navItemWidth;
-				var percent = totalItems - Math.floor(totalItems);
-				var offset = percent ? this.navItemWidth * (1 - percent) : 0;
+		getPreOffset: function() {
+			var items = this.navContent.children();	
+			var currentDistance = Math.abs(this.scrollDistance);
+			var distance = 0;
 
-				this.scrollDistance += this.visualNavWidth; 
+			for (var i = 0; i < items.length; i++) {
+				var itemWidth = this.getWidth($(items[i]), ['cw', 'br', 'bl', 'pr', 'pl']);	
 
-				if (!this.hasPre()) {
+				distance = itemWidth + parseFloat($(items[i]).css('margin-left')) + $(items[i]).position().left;
+
+				if (distance > currentDistance) {
+					return distance - currentDistance;
+				} else if (distance === currentDistance) {
+					var target = items[i+1] ? items[i+1] : null;
+
+					return target ? parseFloat($(target).css('margin-left')) + parseFloat($(items[i]).css('margin-right')) : 0;	
+				}
+			}
+		},
+
+		getNextOffset: function() {
+			var items = this.navContent.children();	
+			var currentDistance = Math.abs(this.scrollDistance);
+			var distance = 0;
+
+			for (var i = 0; i < items.length; i++) {
+				var itemWidth = this.getWidth($(items[i]), ['cw', 'br', 'bl', 'pr', 'pl']);
+
+				distance = itemWidth + parseFloat($(items[i]).css('margin-left')) + $(items[i]).position().left;
+
+				if (distance > currentDistance) {
+					return itemWidth - (distance - currentDistance);
+				} else if (distance === currentDistance) {
+					var target = items[i+1] ? items[i+1] : null;
+
+					return target ? - parseFloat($(target).css('margin-left')) - parseFloat($(items[i]).css('margin-right')) : 0;	
+				}
+			}
+		},
+
+		// 上一项
+		preItem: function() {
+			var targets = this.getTargets(this.DATA_PREFIX + 'id', this.selected + '');
+
+			if (targets.length === 0) {
+				return false;
+			}
+
+			var index = $(targets[0]).index();
+
+			if (index === 0) {
+				return false;	
+			} else {
+				var id = $(this.navContent.children()[index - 1]).attr(this.DATA_PREFIX + 'id');
+
+				this.select(id, true);
+			}
+		},
+
+		// 下一项
+		nextItem: function() {
+			var targets = this.getTargets(this.DATA_PREFIX + 'id', this.selected + '');
+
+			if (targets.length === 0) {
+				return false;
+			}
+
+			var lastIndex = this.navContent.children().length - 1;
+			var index = $(targets[0]).index();
+
+			if (lastIndex === index) {
+				return false;	
+			} else {
+				var id = $(this.navContent.children()[index + 1]).attr(this.DATA_PREFIX + 'id');
+
+				this.select(id, true);
+			}
+		},
+
+		// 上一页 
+		prePage: function() {
+			if (this.hasPrePage()) {
+				var offset = this.getPreOffset();
+
+				this.scrollDistance += this.visualNavItemWidth; 
+
+				if (!this.hasPrePage()) {
 					this.scrollDistance = 0;
 				} else if (offset !== 0) {
 					this.scrollDistance -= offset;	
@@ -447,57 +468,94 @@
 
 				this.navContent.css('margin-left', this.scrollDistance + 'px');
 			}
+
+			this.handleBtn();
 		},
 
-		// 处理next按钮翻页操作
-		handleNextAction: function() {
-			if (this.hasNext()) {
-				this.scrollDistance -= this.visualNavWidth; 
+		// 下一页	
+		nextPage: function() {
+			if (this.hasNextPage()) {
+				this.scrollDistance -= this.visualNavItemWidth; 
 
-				var totalItems = Math.abs(this.scrollDistance) / this.navItemWidth;
-				var percent = totalItems - Math.floor(totalItems);
-				var offset = this.navItemWidth * percent;
+				var offset = this.getNextOffset();
 
-				if (!this.hasNext()) {
-					this.scrollDistance = this.visualNavWidth - this.totalNavWidth;
+				if (!this.hasNextPage()) {
+					this.scrollDistance = this.visualNavItemWidth - this.totalNavItemWidth;
 				} else if (offset !== 0) {
 					this.scrollDistance += offset;
 				}
 
 				this.navContent.css('margin-left', this.scrollDistance + 'px');
 			}
+
+			this.handleBtn();
 		},
 
 		// 滚动到指定项
 		jumpToItem: function(id) {
-			var target = this.getTargetById(id);
+			var targets = this.getTargets(this.DATA_PREFIX + 'id', id + '');
 
-			if (target.length === 0) {
+			if (targets.length === 0) {
 				return false;	
 			}
 
-			this.scrollDistance = -(target.index() * this.navItemWidth);
+			var itemWidth = this.getWidth($(targets[0]), ['ml', 'cw']);
+			var left = $(targets[0]).position().left;
+			var cur = Math.abs(this.scrollDistance);
+
+			if (left >= cur && left <= cur + this.visualNavItemWidth - itemWidth) {
+				return;	
+			}
+
+			this.scrollDistance = -$(targets[0]).position().left - this.getWidth($(targets[0]), ['ml'])
+
+				if (!this.hasPrePage()) {
+					this.scrollDistance = 0;	
+				} else if (!this.hasNextPage()) {
+					this.scrollDistance = this.visualNavItemWidth - this.totalNavItemWidth;	
+				}
+
 			this.navContent.css('margin-left', this.scrollDistance + 'px');
 			this.handleBtn();
 		},
 
+		// 修改指定项的状态
+		changeItemStatus: function(id, targetStatus) {
+			var targets = this.getTargets(this.DATA_PREFIX + 'id', id + '');
+
+			if (targets.length === 0) {
+				return false;
+			}
+
+			var item = $(targets[0]);
+			var originStatus = item.attr(this.DATA_PREFIX + 'status');
+
+			item.removeClass(originStatus);
+			item.attr(this.DATA_PREFIX + 'status', targetStatus);
+		},
+
 		render: function() {
+			this.containerWidth = parseFloat(this.container.css('width'));
+
+			// 设置可视区域宽度
+			this.visualNavItemWidth = this.nextBtn.position().left - this.preBtnWidth;
+
 			var navSection = this.constructNavSection();
 
 			this.preBtn.after(navSection);
-			this.totalNavWidth = this.getTotalNavWidth();
-			this.navItemWidth = this.totalNavWidth / this.navContent.children().length;
+
+			// 设置整个翻页区域的总宽度
+			this.totalNavItemWidth = this.getTotalNavItemWidth();
+			this.nextBtn.css('margin-left', -this.totalNavItemWidth + 'px');
+			this.navContent.css('width', this.totalNavItemWidth + 'px');
 
 			this.select(this.selected);
 			this.handleBtn();
-		},
-
-		bindEvent: function(target, eventType, callback) {
-			target.on(eventType, function(e) {
-				callback(e);
-			});
 		}
+
 	};
 
 	return FlipNavigationBar;
 }));
+
+

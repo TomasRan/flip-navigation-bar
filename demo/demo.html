@@ -2,8 +2,9 @@
 <html lang='en'>
 	<head>
 		<meta charset='utf-8'> 
-		<title>水平滚动条</title>
+		<title>水平导航条</title>
 		<link href='demo.css' rel='stylesheet' type='text/css'>
+		<link href='../dist/flip-navigation-bar.min.css' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
 		<div id='main' class='main'></div>
@@ -11,7 +12,7 @@
 	<script src='require.js'></script>
 	<script src='../node_modules/jquery/dist/jquery.js'></script>
 	<script>
-		var container = $(document.getElementById('main'));
+		var container = $('#main');
 		requirejs(['../flip-navigation-bar'], function(FlipNavBar) {
 			var navData = [];
 
@@ -41,125 +42,59 @@
 				});	
 			}
 
-			container.append('<p>示例一（默认样式）：</p>')
-			var flipNavBar1 = new FlipNavBar({
-				'container': '.main',
-				'navBarId': 'nav-bar-one',
-				'defaultSelected': '3',
-				'navData': navData,
-				'statusClassMap': {
-					'corrected': 'corrected',
-					'correcting': 'correcting',
-					'uncorrect': 'uncorrect'
-				},
-				'jumpToSelected': false,
-				'callback': function(data) {
-					console.log(data);
-					console.log(this.selected);
-				}
+			$('<p>').html('示例一（默认样式）：').appendTo(container);
+			$('<br>').appendTo(container);
+
+			var i1 = new FlipNavBar({
+				'container': container,
+				'navData': navData
 			});
 
-			container.append('<br/>');
-			var flipNavBar2 = new FlipNavBar({
-				'container': '.main',
-				'navBarId': 'nav-bar-two',
-				'navBarWidth': '480px',
-				'defaultSelected': '14',
-				'navData': navData,
-				'statusClassMap': {
-					'corrected': 'corrected',
-					'correcting': 'correcting',
-					'uncorrect': 'uncorrect'
-				},
-				'callback': function(data) {
-					console.log(data);
-					console.log(this.selected);
-				}
-			});
+			$('<br>').appendTo(container);
+			$('<p>').html('示例二：').appendTo(container);
+			$('<br>').appendTo(container);
 
-			container.append('<br/>');
-			container.append('<p>示例二（任意自定义样式）：</p>')
-			var flipNavBar3 = new FlipNavBar({
-				'container': '.main',
-				'navBarId': 'nav-bar-three',
-				'navBtnWidth': '32px',
-				'navContentClass': 'demo-three-nav-content',
-				'navItemClass': 'demo-three-nav-item',
-				'navItemSelectedClass': 'demo-three-selected',
+			var i2 = new FlipNavBar({
+				'container': container,
+				'navData': navData,
+				'navContentClass': 'demo-nav-content',
+				'navItemClass': 'demo-nav-item',
 				'preBtn': {
-					'className': 'demo-three-nav-btn demo-three-nav-left',
-					'activeClass': 'demo-three-nav-active-btn',
-					'disableClass': 'demo-three-nav-disable-btn',
-					'content': '<'	
+					'content': '<<',
+					'className': 'demo-nav-left',
 				},
 				'nextBtn': {
-					'className': 'demo-three-nav-btn demo-three-nav-right',
-					'activeClass': 'demo-three-nav-active-btn',
-					'disableClass': 'demo-three-nav-disable-btn',
-					'content': '>'
-				},
-				'jumpToSelected': false,
-				'defaultSelected': '5',
-				'navData': navData,
-				'statusClassMap': {
-					'corrected': 'corrected',
-					'correcting': 'correcting',
-					'uncorrect': 'uncorrect'
+					'content': '>>',
+					'className': 'demo-nav-right'
 				},
 				'callback': function(data) {
 					console.log(data);
-					console.log(this.selected);
 				}
 			});
 
-			for (var j = 0; j < 49; j++) {
-				var status = '';
-				if (j % 3 === 0) {
-					navData[j].status = 'status-one';
-				} else if (j % 3 === 1) {
-					navData[j].status = 'status-two';
-				} else if (j % 3 === 2) {
-					navData[j].status = 'status-three';
-				}
-			}
+			$('<br>').appendTo(container);
+			$('<p>').html('示例三：').appendTo(container);
+			$('<br>').appendTo(container);
 
-			container.append('<br/>');
-			container.append('<p>示例二（任意自定义样式）：</p>')
-			var flipNavBar3 = new FlipNavBar({
-				'container': '.main',
-				'navBarId': 'nav-bar-three',
-				'navBtnWidth': '32px',
-				'navContentClass': 'demo-three-nav-content',
-				'navItemClass': 'demo-three-nav-item',
-				'navItemSelectedClass': 'demo-three-selected',
+			var i3 = new FlipNavBar({
+				'container': container,
+				'navData': navData,
+				'navContentClass': 'demo-nav-content',
+				'navItemClass': 'demo-nav-item',
 				'preBtn': {
-					'className': 'demo-three-nav-btn demo-three-nav-left',
-					'activeClass': 'demo-three-nav-active-btn',
-					'disableClass': 'demo-three-nav-disable-btn',
-					'content': '<'	
+					'content': '<<',
+					'className': 'demo-nav-left'
 				},
 				'nextBtn': {
-					'className': 'demo-three-nav-btn demo-three-nav-right',
-					'activeClass': 'demo-three-nav-active-btn',
-					'disableClass': 'demo-three-nav-disable-btn',
-					'content': '>'
+					'content': '>>',
+					'className': 'demo-nav-right'
 				},
-				'jumpToSelected': false,
-				'defaultSelected': '5',
-				'navData': navData,
-				'statusClassMap': {
-					'status-one': 'status-one',
-					'status-two': 'status-two',
-					'status-three': 'status-three'
-				},
-				'callback': function(data) {
-					console.log(data);
-					console.log(this.selected);
-				}
+				'callback': function(data) {}
 			});
-			/* setTimeout(function() {
-				flipNavBar.select('8');
-			}, 2000);*/
+
+			setInterval(function(flip) {
+				i3.nextItem();
+			}.bind(i3), 1000);
 
 			container.css('margin-left', -container.width()/2 + 'px');
 			container.css('margin-top', -container.height()/2 + 'px');
