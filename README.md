@@ -26,16 +26,9 @@ $ bower install flip-navigation-bar
 
 	var flipNavBar = new FilpNavBar({
 		'container': '.main',
-		'navBarWidth': '',
-		'navBtnWidth': '',
-		'navItemWidth': '',
-		'defaultSelected': '3',
 		'navData': [],
-		'statusClassMap': {},
-		'jumpToSelected': false,
+		'defaultSelected': '3',
 		'calllback': function() {}
-		'preBtn': {},
-		'nextBtn': {}
 	});
 ```
 
@@ -45,21 +38,7 @@ $ bower install flip-navigation-bar
 ##### description:
 It's a string or a jquery selector passed to contain the flip nav bar.
 
-> navBarId
-
 > navBarClass
-
-> navBarWidth
-
-> navItemWidth
-
-##### description:
-the width of single nav item
-
-> navBtnWidth
-
-##### description:
-the width of pre/next button
 
 > navContentClass
 
@@ -76,10 +55,20 @@ the class of single navigation item
 ##### description:
 the class of single navigation item when selected
 
-> statusClassMap
+> navBtnClass
 
 ##### description:
-For each of navigation items, it will have a customized status. So a extra class will be added to it according to the map.
+the class of both of pre and next btn
+
+> btnActiveClass
+
+##### description:
+the class of pre/next which represents it can be clicked
+
+> btnDisableClass:
+
+##### description:
+the class of pre/next which represents it cannot be clicked
 
 > defaultSelected
 
@@ -106,8 +95,8 @@ configuration of pre/next button
 |id| id of button |
 |content| content of button |
 |className| class of button |
-|activeClass| active class of button|
-|disableClass| disable class of button|
+|activeClass| active class of button (if not set , it will inherit `btnActiveClass`)|
+|disableClass| disable class of button (if not set, it will inherit `btnDisableClass`)|
 
 > navData
 
