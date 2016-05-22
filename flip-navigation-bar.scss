@@ -1,0 +1,45 @@
+.flip-nav-bar {
+}
+
+.flip-nav-content {
+	border-top: 1px solid #d1d1d1;
+	border-bottom: 1px solid #d1d1d1;
+}
+
+.flip-nav-item {
+	width: 30px;
+	height: 30px;
+	background: #f7f7f7;	
+	line-height: 30px;
+	text-align:center;
+	border-right: 1px solid #d1d1d1;
+	border-left: 1px solid #d1d1d1;
+}
+
+.flip-nav-item + .flip-nav-item {
+	margin-left: 20px;
+}
+
+.flip-nav-btn {
+	border: 1px solid #d1d1d1;
+	width: 40px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+}
+
+.flip-nav-disable-btn {
+	background: #f1f1f1;
+	color: #333;
+}
+
+.flip-nav-active-btn {
+	background: blue;
+	color: #fff;
+}
+
+.flip-nav-item-selected {
+	background: blue;	
+	color: #fff;
+}
+
