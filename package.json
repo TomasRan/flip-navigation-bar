@@ -1,6 +1,6 @@
 {
   "name": "flip-navigation-bar",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "flip navigation bar",
   "main": "flip-navigation-bar.js",
   "scripts": {
