@@ -534,6 +534,19 @@
 			item.attr(this.DATA_PREFIX + 'status', targetStatus);
 		},
 
+		// 得到指定项的状态
+		getItemStatus: function(id) {
+			var targets = this.getTargets(this.DATA_PREFIX + 'id', id + '');
+
+			if (targets.length === 0) {
+				return false;	
+			}
+
+			var item = $(targets[0]);
+
+			return item.attr(this.DATA_PREFIX + 'status');
+		},
+
 		render: function() {
 			this.containerWidth = parseFloat(this.container.css('width'));
 
