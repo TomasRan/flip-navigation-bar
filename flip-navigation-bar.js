@@ -87,10 +87,10 @@
 
 		// 构造pre/next按钮
 		this.preBtn = this.constructButton(this.options.preBtn).css({
-			'float': 'left'
+			'left': 0
 		});
 		this.nextBtn = this.constructButton(this.options.nextBtn).css({
-			'float': 'right'
+			'right': 0
 		});
 
 		this.preActive = this.options.preBtn.activeClass || this.options.navBtnActiveClass;
@@ -178,6 +178,8 @@
 				'id': btnOpts.id,
 				'class': btnOpts.className || this.options.navBtnClass
 			}).css({
+				'position': 'absolute',
+				'top': 0, 
 				'cursor': this.CURSOR
 			}).html(btnOpts.content);
 
@@ -225,14 +227,12 @@
 			var navMask = createElement(self.NAV_MASK_TAG).attr({
 				'class': self.options.navContentClass
 			}).css({
-				'float': 'left',
-				'width': self.visualNavItemWidth + 'px',
-				'overflow': 'hidden',
+				'overflow': 'hidden'
 			});
 
 			var navContent = createElement(self.NAV_CONTENT_TAG).css({
 				'position': 'relative',
-				'width': '9999999px'
+				'width': '999999999999999px'
 			});
 
 			navMask.append(navContent);
@@ -347,7 +347,9 @@
 
 		// 是否有下一页
 		hasNextPage: function() {
-			return Math.abs(this.scrollDistance) < (this.totalNavItemWidth - this.visualNavItemWidth);
+			var visualNavItemWidth = this.navMask.width();
+
+			return Math.abs(this.scrollDistance) < (this.totalNavItemWidth - visualNavItemWidth);
 		},
 
 		// 是否有上一页
@@ -455,10 +457,12 @@
 
 		// 上一页 
 		prePage: function() {
+			var visualNavItemWidth = this.navMask.width();
+
 			if (this.hasPrePage()) {
 				var offset = this.getPreOffset();
 
-				this.scrollDistance += this.visualNavItemWidth; 
+				this.scrollDistance += visualNavItemWidth; 
 
 				if (!this.hasPrePage()) {
 					this.scrollDistance = 0;
@@ -474,13 +478,15 @@
 
 		// 下一页	
 		nextPage: function() {
+			var visualNavItemWidth = this.navMask.width();
+
 			if (this.hasNextPage()) {
-				this.scrollDistance -= this.visualNavItemWidth; 
+				this.scrollDistance -= visualNavItemWidth; 
 
 				var offset = this.getNextOffset();
 
 				if (!this.hasNextPage()) {
-					this.scrollDistance = this.visualNavItemWidth - this.totalNavItemWidth;
+					this.scrollDistance = visualNavItemWidth - this.totalNavItemWidth;
 				} else if (offset !== 0) {
 					this.scrollDistance += offset;
 				}
@@ -493,6 +499,7 @@
 
 		// 滚动到指定项
 		jumpToItem: function(id) {
+			var visualNavItemWidth = this.navMask.width();
 			var targets = this.getTargets(this.DATA_PREFIX + 'id', id + '');
 
 			if (targets.length === 0) {
@@ -503,7 +510,7 @@
 			var left = $(targets[0]).position().left;
 			var cur = Math.abs(this.scrollDistance);
 
-			if (left >= cur && left <= cur + this.visualNavItemWidth - itemWidth) {
+			if (left >= cur && left <= cur + visualNavItemWidth - itemWidth) {
 				return;	
 			}
 
@@ -512,7 +519,7 @@
 				if (!this.hasPrePage()) {
 					this.scrollDistance = 0;	
 				} else if (!this.hasNextPage()) {
-					this.scrollDistance = this.visualNavItemWidth - this.totalNavItemWidth;	
+					this.scrollDistance = visualNavItemWidth - this.totalNavItemWidth;	
 				}
 
 			this.navContent.css('margin-left', this.scrollDistance + 'px');
@@ -550,17 +557,15 @@
 		render: function() {
 			this.containerWidth = parseFloat(this.container.css('width'));
 
-			// 设置可视区域宽度
-			this.visualNavItemWidth = this.nextBtn.position().left - this.preBtnWidth;
-
 			var navSection = this.constructNavSection();
+
+			this.navMask.css('margin-left', this.preBtnWidth);
+			this.navMask.css('margin-right', this.nextBtnWidth);
 
 			this.preBtn.after(navSection);
 
 			// 设置整个翻页区域的总宽度
 			this.totalNavItemWidth = this.getTotalNavItemWidth();
-			this.nextBtn.css('margin-left', -this.totalNavItemWidth + 'px');
-			this.navContent.css('width', this.totalNavItemWidth + 'px');
 
 			this.select(this.selected);
 			this.handleBtn();
